@@ -248,11 +248,11 @@ int ParseTickerBlueRawText()
 				lastTopLine = line;
 			}
 			else
-			{
-				lastTopLine = line;
+			{;
 				var textData = stringBuffer.ToString().Replace("：", ":");
 				stringBuffer.Clear();
 				var match = tickerNumberRegex.Match(lastTopLine);
+
 				if (match.Success == false)
 				{
 					throw new Exception("This shouldn't happen...");
@@ -270,18 +270,21 @@ int ParseTickerBlueRawText()
 					
 					if (nameIndexes.ContainsKey(cleanName) == false)
 					{
-						nameIndexes[cleanName] = new List<int>() { i };
+						nameIndexes[cleanName] = new List<int>() { number };
 					}
 					else
 					{
-						var list = nameIndexes[cleanName];
-						if (list.Contains(i) == false && list.Contains(i - 1) == false && list.Contains(i - 2) == false)
-						{
-							nameIndexes[cleanName].Add(i);
-						}
+						nameIndexes[cleanName].Add(number);
 					}	
 
 				}
+				else
+				{
+					throw new Exception("This again also shouldn't happen...");
+				}
+				
+				
+				lastTopLine = line;
 
 			}
 		}
