@@ -81,6 +81,87 @@ async Task<int> GenerateTickerRawText()
 	return 0;
 }
 
+async Task<int> ParseTickerRawText()
+{
+	var tickerRawLines = File.ReadAllLines("ticker_raw_text.txt");
+	
+	var nameIndexes = new Dictionary<string, List<int>>();
+
+	var nameSplitRegex = new Regex("^(.*?)|(?<names>.*)|");
+	
+	for (var i = 0; i < tickerRawLines.Length; ++i)
+	{
+		var line = tickerRawLines[i];
+		
+		// Manually append the last 2 names
+		if (i == 2794)
+		{
+			line += " - foxfire43 - ShadowSax - ";
+		}
+		
+		// Replease seperators with our new seperator of |
+		line = line.Replace(" = ", "|");
+		line = line.Replace("= ", "|");
+		line = line.Replace(" =", "|");
+		line = line.Replace(" - ", "|");
+		line = line.Replace("- ", "|");
+		line = line.Replace(" -", "|");
+		
+		// There should not be any spaces in names so lets also remove them
+		line = line.Replace(" ", String.Empty);
+		
+		// Only check lines with -
+		if (line.Contains("|") == false)
+		{
+			continue;
+		}
+		
+		
+		var match = nameSplitRegex.Match(line);
+		if (match.Success == false)
+		{
+			//Debugger.Break();
+			continue;
+		}
+
+		var names = line.Split("|", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+		
+		foreach (var name in names)
+		{
+			// According to site names need to be less than 3 characters
+			if (name.Length < 3)
+			{
+				//Debugger.Break();
+				continue;
+			}
+			
+			// They can also only contain a-z, A-Z, 0-9, ., -, _
+			// But according to https://business-service.roosterteeth.com/api/v1/users/validate_attributes
+			// it does not appear that they can start or end with a special character.
+			var cleanName = name.Trim('.', '_', '-', '!');
+			
+			if (nameIndexes.ContainsKey(cleanName) == false)
+			{
+				nameIndexes[cleanName] = new List<int>() { i };
+			}
+			else
+			{
+				var list = nameIndexes[cleanName];
+				if (list.Contains(i) == false && list.Contains(i - 1) == false && list.Contains(i - 2) == false)
+				{
+					nameIndexes[cleanName].Add(i);
+				}
+			}		
+		}
+	}
+
+	var json = System.Text.Json.JsonSerializer.Serialize(nameIndexes, new System.Text.Json.JsonSerializerOptions() { WriteIndented = true });
+	File.WriteAllText("ticker_names.json", json);
+	
+	Debugger.Break();
+	
+	return 0;
+}
 
 // This code is not meant to be run as a single application, this is just me doing stuff to get the raw data.
 
@@ -90,6 +171,8 @@ async Task<int> GenerateTickerRawText()
 // This generated the ticker_raw_text.txt already added to the project.
 //await GenerateTickerRawText();
 
-// foxfire43, ShadowSax
+await ParseTickerRawText();
+
+
 
 return 0;
