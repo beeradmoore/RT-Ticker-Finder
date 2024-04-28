@@ -27,6 +27,11 @@
         .cell-padding {
             padding: 10px;
         }
+
+        .results-table {
+            overflow: scroll;
+            width: 560px;
+        }
     </style>
 </head>
 
@@ -42,7 +47,7 @@
                 <!--<button class="btn btn-outline-success" type="submit">Search</button>-->
             </form>
         </div>
-        <div id="results-table"></div>
+        <div id="results-table" class="results-table"></div>
     </div>
 
     <!-- Optional JavaScript; choose one of the two! -->
@@ -74,18 +79,13 @@
             });
         }
 
-        // Handle click events on the timestamps
-        document.querySelectorAll('.timestamp').forEach(function (link) {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                let time = e.target.getAttribute('data-time');
-                player.seekTo(time);
-            });
-        });
+        function goToTime(time)
+        { 
+            player.seekTo(time);
+        }
 
 
         var jsonNames = [];
-
 
         function secondsToTime(seconds) {
             let hours = Math.floor(seconds / 3600);
@@ -101,7 +101,7 @@
         }
 
 
-        fetch('ticker_names.json')
+        fetch('https://beeradmoore.github.io/rt-ticker-finder/ticker_names.json')
             .then(response => response.json())
             .then(data => {
                 // 'data' is a JavaScript object containing the contents of the JSON file
@@ -139,7 +139,7 @@
                         // so this will offset it to match.
                         actualTimeOffset -= 19;
 
-                        timeCellInnerHtml += '<a href="#" class="timestamp" data-time="' + actualTimeOffset + '">' + secondsToTime(actualTimeOffset) + '</a><br>';
+                        timeCellInnerHtml += '<a href="#" OnClick="javascript:goToTime(' + actualTimeOffset + ');">' + secondsToTime(actualTimeOffset) + '</a><br>';
                     }
 
                     timeCell.innerHTML = timeCellInnerHtml;
