@@ -51,6 +51,11 @@
             <div class="alert alert-info" role="alert">
                 Page built terribly with the assistance of GitHub Copilot. If you wish to improve it please create a <a href="https://github.com/beeradmoore/rt-ticker-finder">pull request</a>.
             </div>
+            <strong>How it works: </strong> Enter your name in the above box and it will try find your on-screen comment or your name in the bottom ticker box. <br><br>
+            If your name has a 🔵 next to it, it means that is an on-screen comment. These all appear above normal search results.<br>
+            If your name is not found it may be that it was just not there. Also try search parts of your name as some characters didn't get read correctly from the video feed. EG. Number one (1) is sometimes read as an I and sometimes as a l.  <br><br>
+
+
             <!-- The YouTube video player will be inserted here -->
             <div id="player"></div>
 
@@ -59,7 +64,8 @@
                     id="search-input">
                 <!--<button class="btn btn-outline-success" type="submit">Search</button>-->
             </form>
-        </div>
+
+                   </div>
         <div id="results-table" class="results-table"></div>
     </div>
 
@@ -99,6 +105,7 @@
 
 
         var jsonNames = [];
+        var jsonBlueNames = [];
 
         function secondsToTime(seconds) {
             let hours = Math.floor(seconds / 3600);
@@ -123,15 +130,50 @@
             })
             .catch(error => console.error('Error:', error));
 
+        fetch('https://beeradmoore.github.io/rt-final-stream-ticker-searcher/ticker_blue_names.json')
+            .then(response => response.json())
+            .then(data => {
+                // 'data' is a JavaScript object containing the contents of the JSON file
+                //console.log(data);
+                jsonBlueNames = data;
+            })
+            .catch(error => console.error('Error:', error));
+
         document.getElementById('search-input').addEventListener('input', function (e) {
             let searchQuery = e.target.value.toLowerCase();
             let results = Object.keys(jsonNames).filter(name => name.toLowerCase().includes(searchQuery));
+            let resultsBlue = Object.keys(jsonBlueNames).filter(name => name.toLowerCase().includes(searchQuery));
 
             let resultsTable = document.getElementById('results-table');
             resultsTable.innerHTML = ''; // Clear previous results
 
-            if (results.length > 0) {
+            if (results.length > 0 || resultsBlue.length > 0) {
                 let table = document.createElement('table');
+
+                resultsBlue.forEach(name => {
+                    let row = table.insertRow();
+
+                    let nameCell = row.insertCell();
+                    nameCell.textContent = name + " 🔵";
+                    nameCell.classList.add('vertically-centered');
+                    nameCell.classList.add('cell-padding');
+
+                    let timeCell = row.insertCell();
+                    timeCell.classList.add('cell-padding');
+
+                    var timeCellInnerHtml = '';
+                    for (var i = 0; i < jsonBlueNames[name].length; ++i) {
+                        // Frame number is in 8 second increments
+                        var actualTimeOffset = (jsonBlueNames[name][i] * 8);
+
+                        timeCellInnerHtml += '<a href="#" OnClick="javascript:goToTime(' + actualTimeOffset + ');">' + secondsToTime(actualTimeOffset) + '</a><br>';
+                    }
+
+                    timeCell.innerHTML = timeCellInnerHtml;
+
+                });
+                resultsTable.appendChild(table);
+
                 results.forEach(name => {
                     let row = table.insertRow();
 
