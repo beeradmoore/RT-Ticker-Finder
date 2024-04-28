@@ -93,12 +93,6 @@ async Task<int> ParseTickerRawText()
 	{
 		var line = tickerRawLines[i];
 		
-		// Manually append the last 2 names
-		if (i == 2794)
-		{
-			line += " - foxfire43 - ShadowSax - ";
-		}
-		
 		// Replease seperators with our new seperator of |
 		line = line.Replace(" = ", "|");
 		line = line.Replace("= ", "|");
@@ -166,7 +160,7 @@ async Task<int> ParseTickerRawText()
 // This code is not meant to be run as a single application, this is just me doing stuff to get the raw data.
 
 // Ticker images were already extracted with 
-// ffmpeg -ss 0:10:55 -i live.mkv -to 6:19:30 -r 0.125 -vf "fps=1,crop=1380:50:530:1030" ticker/ticker_%04d.png
+// ffmpeg "Why We Were Here [QL4X5aOazR0].mp4" -r 0.125 -vf "fps=1,crop=1380:50:530:1030" ticker/ticker_%04d.png    
 
 // This generated the ticker_raw_text.txt already added to the project.
 //await GenerateTickerRawText();

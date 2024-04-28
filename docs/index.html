@@ -135,10 +135,6 @@
                         // Frame number is in 8 second increments
                         var actualTimeOffset = (jsonNames[name][i] * 8);
 
-                        // My local stream started 19 seconds earlier than YT stream
-                        // so this will offset it to match.
-                        actualTimeOffset -= 19;
-
                         timeCellInnerHtml += '<a href="#" OnClick="javascript:goToTime(' + actualTimeOffset + ');">' + secondsToTime(actualTimeOffset) + '</a><br>';
                     }
 
