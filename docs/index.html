@@ -35,13 +35,14 @@
         }
 
         .results-table {
-            overflow: scroll;
+            overflow: scroll !important;
             width: 560px;
         }
 
         .center_box {
             width: 560px;
         }
+        
     </style>
 </head>
 
@@ -51,10 +52,6 @@
             <div class="alert alert-info" role="alert">
                 Page built terribly with the assistance of GitHub Copilot. If you wish to improve it please create a <a href="https://github.com/beeradmoore/rt-ticker-finder">pull request</a>.
             </div>
-            <strong>How it works: </strong> Enter your name in the above box and it will try find your on-screen comment or your name in the bottom ticker box. <br><br>
-            If your name has a 🔵 next to it, it means that is an on-screen comment. These all appear above normal search results.<br>
-            If your name is not found it may be that it was just not there. Also try search parts of your name as some characters didn't get read correctly from the video feed. EG. Number one (1) is sometimes read as an I and sometimes as a l.  <br><br>
-
 
             <!-- The YouTube video player will be inserted here -->
             <div id="player"></div>
@@ -66,7 +63,13 @@
             </form>
 
                    </div>
-        <div id="results-table" class="results-table"></div>
+        <div id="results-table" class="results-table">
+            <strong>How it works: </strong> Enter your name in the above box and it will try find your on-screen comment or your name in the bottom ticker box. <br><br>
+            If your name has a 🔵 next to it, it means that is an on-screen comment. These all appear above normal search results.<br>
+            If your name is not found it may be that it was just not there. Also try search parts of your name as some characters didn't get read correctly from the video feed. EG. Number one (1) is sometimes read as an I and sometimes as a l.  <br><br>
+            The timestamp may not land you on the exact second your name/comment is there, so you may still need to scroll forwads and backwards a few seconds.
+
+        </div>
     </div>
 
     <!-- Optional JavaScript; choose one of the two! -->
@@ -165,6 +168,9 @@
                     for (var i = 0; i < jsonBlueNames[name].length; ++i) {
                         // Frame number is in 8 second increments
                         var actualTimeOffset = (jsonBlueNames[name][i] * 8);
+
+                        // Not sure why blue text is off by about 16 seconds.
+                        actualTimeOffset -= 16;
 
                         timeCellInnerHtml += '<a href="#" OnClick="javascript:goToTime(' + actualTimeOffset + ');">' + secondsToTime(actualTimeOffset) + '</a><br>';
                     }
